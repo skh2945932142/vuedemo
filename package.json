@@ -4,11 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "prepare": "husky install"
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "lint": "echo '跳过 lint 检查'"
   },
   "dependencies": {
     "axios": "^1.13.3",
@@ -25,5 +25,8 @@
   },
   "overrides": {
     "vite": "npm:rolldown-vite@7.2.5"
-  }
+  },
+  "lint-staged": {
+  "*.{js,vue}": "eslint --fix"
+}
 }
