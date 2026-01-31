@@ -1,16 +1,25 @@
+//展示页面
 <script setup>
-//1.导入函数
-import { ref } from 'vue'
-//2.执行函数，传入参数【简单类型=对象类型】
 
-const state = ref(0)
-const setCount = () => {
-  //脚本区域修改ref产生的响应式对象数据必须通过.value属性
-  state.value++
-}
 </script>
+
 <template>
-  <div>
-    <button @click="setCount">{{ state }}</button>
-  </div>
+  <router-view />
 </template>
+
+<style>
+:root {
+  --el-font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+  background-color: #f5f7fa;
+
+  /* 字体更清晰 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+</style>
