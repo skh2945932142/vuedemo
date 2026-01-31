@@ -10,13 +10,15 @@ export default [
       ecmaVersion: "latest",
       sourceType: "module",
       globals: {
-        ...globals.browser, // 解决 router/index.js 中 localStorage 的报错
+        ...globals.browser, // 允许使用 localStorage, window, console 等浏览器全局变量
         ...globals.node,
       },
     },
     rules: {
-      "vue/multi-word-component-names": "off",
-      "no-unused-vars": "warn", // 将未使用变量设为警告而非错误，避免卡住提交
+      "vue/multi-word-component-names": "off", // 允许单单词组件名，如 Home.vue
+      "no-unused-vars": "warn",               // 允许存在未使用的变量但报警告
+      "no-console": "off",                    // 允许使用 console.log
+      "vue/require-default-prop": "off",      // 如果不想给每个 prop 写 default，可以关掉这个
     },
   },
   {
