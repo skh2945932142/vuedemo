@@ -11,9 +11,11 @@
     "lint": "eslint . --ext .vue,.js --fix"
   },
   "dependencies": {
+    "@kangc/v-md-editor": "^2.3.18",
     "axios": "^1.13.3",
     "element-plus": "^2.13.2",
     "pinia": "^3.0.4",
+    "prismjs": "^1.30.0",
     "sass": "^1.97.3",
     "vditor": "^3.11.2",
     "vue": "^3.5.24",

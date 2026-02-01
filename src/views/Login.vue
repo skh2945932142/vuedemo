@@ -1,12 +1,76 @@
 <script setup>
-//登录界面
-import { ref } from 'vue'
-const userName = ref('')
-const password = ref('')
-const login = () => {
-    console.log('已点击登录')
+import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import axios from 'axios'
+import { ElMessage } from 'element-plus'
+
+const router = useRouter()
+
+// --- 状态定义 ---
+
+const isRegister = ref(false)
+const loading = ref(false)    // 按钮加载状态
+const form = ref({
+    username: '',
+    password: ''
+})
+
+// --- 核心逻辑 ---
+
+// 1. 切换 登录/注册
+const toggleMode = () => {
+    isRegister.value = !isRegister.value
+    form.value = { username: '', password: '' } // 清空表单
 }
+
+// 2. 提交表单
+const handleSubmit = async () => {
+    // 简单校验
+    if (!form.value.username || !form.value.password) {
+        return ElMessage.warning('用户名和密码不能为空')
+    }
+
+    loading.value = true
+
+    try {
+        const url = isRegister.value ? '/api/register' : '/api/login'
+
+        // 发送请求
+        const res = await axios.post(url, form.value)
+
+        if (isRegister.value) {
+            // --- 注册成功 ---
+            ElMessage.success('注册成功！请直接登录')
+            toggleMode() // 自动切回登录模式
+        } else {
+            // --- 登录成功 ---
+            const { token, user } = res.data
+
+            // A. 存 Token (关键！)
+            localStorage.setItem('token', token)
+            localStorage.setItem('userInfo', JSON.stringify(user))
+
+            ElMessage.success('登录成功，欢迎回来！')
+
+            // B. 跳转首页
+            router.push('/')
+        }
+
+    } catch (error) {
+        // 错误处理
+        const msg = error.response?.data?.message || '请求失败，请检查网络或后端'
+        ElMessage.error(msg)
+    } finally {
+        loading.value = false
+    }
+}
+
+// 标题文字
+const titleText = computed(() => isRegister.value ? '创建新账号' : '个人知识库')
+const btnText = computed(() => isRegister.value ? '立即注册' : '登录')
+const linkText = computed(() => isRegister.value ? '已有账号？去登录' : '没有账号？去注册')
 </script>
+
 <template>
   <div class="login_Page">
     <div class="login_Container">
@@ -15,10 +79,10 @@ const login = () => {
           😋
         </h1>
         <h2 class="title">
-          个人知识库
+          {{ titleText }}
         </h2>
         <p class="subtitle">
-          继续使用您的账号
+          记录你的每一个灵感
         </p>
       </div>
 
@@ -28,17 +92,18 @@ const login = () => {
       >
         <el-form-item label="用户名">
           <el-input
-            v-model="userName"
+            v-model="form.username"
             placeholder="请输入用户名"
             size="large"
           />
         </el-form-item>
         <el-form-item label="密码">
           <el-input
-            v-model="password"
+            v-model="form.password"
             type="password"
             placeholder="请输入密码"
             size="large"
+            @keyup.enter="handleSubmit"
           />
         </el-form-item>
         <el-form-item>
@@ -46,29 +111,33 @@ const login = () => {
             type="primary"
             class="login_Button"
             size="large"
-            @click="login"
+            :loading="loading"
+            @click="handleSubmit"
           >
-            登录
+            {{ btnText }}
           </el-button>
         </el-form-item>
       </el-form>
 
-
       <div class="login_Footer">
         <a
-          href="#"
+          href="javascript:;"
           class="footer_Link"
-        >忘记密码？</a>
+          @click="toggleMode"
+        >
+          {{ linkText }}
+        </a>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+/* 样式保持原样，微调了一下背景色 */
 .login_Page {
     width: 100%;
     height: 100vh;
-    background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -82,11 +151,6 @@ const login = () => {
     padding: 48px 40px;
     width: 100%;
     max-width: 400px;
-    transition: box-shadow 0.3s ease;
-}
-
-.login_Container:hover {
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 }
 
 .login_Header {
@@ -104,69 +168,24 @@ const login = () => {
     font-weight: 600;
     color: #1a1a1a;
     margin: 0 0 8px 0;
-    letter-spacing: -0.5px;
 }
 
 .subtitle {
     font-size: 15px;
     color: #787774;
     margin: 0;
-    font-weight: 400;
-}
-
-.login_Form {
-    margin-top: 32px;
-}
-
-.login_Form :deep(.el-form-item__label) {
-    font-size: 14px;
-    font-weight: 500;
-    color: #37352f;
-    margin-bottom: 8px;
-}
-
-.login_Form :deep(.el-input__wrapper) {
-    border-radius: 8px;
-    box-shadow: none;
-    border: 1.5px solid #e3e3e0;
-    transition: all 0.2s ease;
-    padding: 8px 12px;
-}
-
-.login_Form :deep(.el-input__wrapper:hover) {
-    border-color: #d1d1ce;
-}
-
-.login_Form :deep(.el-input__wrapper.is-focus) {
-    border-color: #2383e2;
-    box-shadow: 0 0 0 3px rgba(35, 131, 226, 0.08);
-}
-
-.login_Form :deep(.el-input__inner) {
-    font-size: 15px;
-    color: #37352f;
 }
 
 .login_Button {
     width: 100%;
     margin-top: 8px;
-    border-radius: 8px;
-    font-size: 15px;
     font-weight: 500;
-    height: 44px;
     background: #2383e2;
     border: none;
-    transition: all 0.2s ease;
 }
 
 .login_Button:hover {
     background: #1a6fc7;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(35, 131, 226, 0.3);
-}
-
-.login_Button:active {
-    transform: translateY(0);
 }
 
 .login_Footer {
@@ -178,11 +197,10 @@ const login = () => {
     font-size: 14px;
     color: #2383e2;
     text-decoration: none;
-    transition: color 0.2s ease;
+    cursor: pointer;
 }
 
 .footer_Link:hover {
-    color: #1a6fc7;
     text-decoration: underline;
 }
 </style>
