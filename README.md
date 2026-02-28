@@ -13,7 +13,7 @@ Markdown
 
 1. **克隆项目**
    ```bash
-   git clone [你的前端仓库地址]
+   git clone [https://github.com/skh2945932142/Knowledge-Base]
    cd vuedemo
 安装依赖
 
@@ -41,7 +41,7 @@ Notion 极简风格布局
 ---
 
 ### 2. 后端仓库 (`Knowledge-Base-server`)
-**建议文件名：** `README.md`
+
 
 ```markdown
 # 🦁 我的知识库 - 后端接口
@@ -56,7 +56,7 @@ Notion 极简风格布局
 
 1. **克隆项目**
    ```bash
-   git clone [你的后端仓库地址]
+   git clone [https://github.com/skh2945932142/Knowledge-Base-server]
    cd server
 安装依赖
 
